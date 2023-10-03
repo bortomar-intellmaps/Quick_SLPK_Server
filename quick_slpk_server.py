@@ -43,7 +43,7 @@ from io import BytesIO
 import os, sys, json, gzip, zipfile
 
 #User parameter
-host='localhost'
+host='0.0.0.0'
 port=8080
 home=os.path.join(os.path.dirname(os.path.realpath(__file__)),"slpk") #SLPK Folder
 
@@ -122,40 +122,40 @@ def layer_info(slpk):
 	response.content_type = 'application/json'
 	return json.dumps(SceneLayerInfo)
 
-@app.route('/<slpk>/SceneServer/layers/<layer>/nodes/<node>')
-@app.route('/<slpk>/SceneServer/layers/<layer>/nodes/<node>/')
+@app.route('/<slpk>/SceneServer/layers/<layer>/nodepages/<node>')
+@app.route('/<slpk>/SceneServer/layers/<layer>/nodepages/<node>/')
 @enable_cors
 def node_info(slpk,layer,node):
 	""" Node information JSON """
 	if slpk not in slpks: #Get 404 if slpk doesn't exists
 		abort(404, "Can't found SLPK: %s"%slpk)
-	NodeIndexDocument=json.loads(read("nodes/%s/3dNodeIndexDocument.json.gz"%node,slpk))
+	NodeIndexDocument=json.loads(read("nodepages/%s.json.gz"%node,slpk))
 	response.content_type = 'application/json'
 	return json.dumps(NodeIndexDocument)
 
-@app.route('/<slpk>/SceneServer/layers/<layer>/nodes/<node>/geometries/0')
-@app.route('/<slpk>/SceneServer/layers/<layer>/nodes/<node>/geometries/0/')
+@app.route('/<slpk>/SceneServer/layers/<layer>/nodes/<node>/geometries/<geom>')
+@app.route('/<slpk>/SceneServer/layers/<layer>/nodes/<node>/geometries/<geom>/')
 @enable_cors
-def geometry_info(slpk,layer,node):
+def geometry_info(slpk,layer,node,geom):
 	""" Geometry information bin """
 	if slpk not in slpks: #Get 404 if slpk doesn't exists
 		abort(404, "Can't found SLPK: %s"%slpk)
 	response.content_type = 'application/octet-stream; charset=binary'
 	response.content_encoding = 'gzip'
-	return read("nodes/%s/geometries/0.bin.gz"%node,slpk)
+	return read("nodes/%s/geometries/%s.bin.gz"%(node,geom),slpk)
 
-@app.route('/<slpk>/SceneServer/layers/<layer>/nodes/<node>/textures/0_0')
-@app.route('/<slpk>/SceneServer/layers/<layer>/nodes/<node>/textures/0_0/')
+@app.route('/<slpk>/SceneServer/layers/<layer>/nodes/<node>/textures/<tex>')
+@app.route('/<slpk>/SceneServer/layers/<layer>/nodes/<node>/textures/<tex>/')
 @enable_cors
-def textures_info(slpk,layer,node):
+def textures_info(slpk,layer,node,tex):
 	""" Texture information JPG """
 	if slpk not in slpks: #Get 404 if slpk doesn't exists
 		abort(404, "Can't found SLPK: %s"%slpk)
 
-	response.headers['Content-Disposition'] = 'attachment; filename="0_0.jpg"'
+	response.headers['Content-Disposition'] = 'attachment; filename="0.jpg"'
 	response.content_type = 'image/jpeg'
 	try:
-		return read("nodes/%s/textures/0_0.jpg"%node,slpk)
+		return read("nodes/%s/textures/0.jpg"%node,slpk)
 	except:
 		try:
 			return read("nodes/%s/textures/0_0.bin"%node,slpk)
