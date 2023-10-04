@@ -152,13 +152,13 @@ def textures_info(slpk,layer,node,tex):
 	if slpk not in slpks: #Get 404 if slpk doesn't exists
 		abort(404, "Can't found SLPK: %s"%slpk)
 
-	response.headers['Content-Disposition'] = 'attachment; filename="0.jpg"'
+	response.headers['Content-Disposition'] = 'attachment; filename="%s.jpg"'%tex
 	response.content_type = 'image/jpeg'
 	try:
-		return read("nodes/%s/textures/0.jpg"%node,slpk)
+		return read("nodes/%s/textures/%s.jpg"%(node,tex),slpk)
 	except:
 		try:
-			return read("nodes/%s/textures/0_0.bin"%node,slpk)
+			return read("nodes/%s/textures/%s.bin"%(node,tex),slpk)
 		except: 
 			return ""
 
